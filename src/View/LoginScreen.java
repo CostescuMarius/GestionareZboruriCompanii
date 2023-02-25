@@ -6,44 +6,64 @@ import java.awt.*;
 import javax.swing.*;
 
 
-public class LoginScreen extends JPanel {
-    int w = this.getWidth();
-    int h = this.getHeight();
-    JLabel l_user;
-    JLabel l_password;
-    public LoginScreen() {
+public class LoginScreen extends JLayeredPane {
+    int width, height;
 
-        this.setLayout(null);
+    private JLabel l_user, l_password, l_logo_company;
+    private JTextField text_user;
+    private JPasswordField text_password;
+    BackgroundLogin background_login;
+
+    public LoginScreen(int width, int height) {
+        this.width = width;
+        this.height = height;
 
         set_labels();
+
+        set_insert_username_and_password();
+
+        //set_buttons();
     }
 
     private void set_labels() {
+        background_login = new BackgroundLogin(this.width, this.height);
+        this.add(background_login, 1, 0);
+
         l_user = new JLabel("Username:");
-        l_user.setBounds(20, 100, 100, 20);
-        l_user.setFont(new Font("Arial", Font.BOLD, 15));
+        l_user.setBounds(70, 190, 100, 20);
+        l_user.setFont(new Font("Arial", Font.ITALIC, 15));
         l_user.setForeground(Color.white);
-        this.add(l_user);
+        this.add(l_user, 2, 0);
 
         l_password = new JLabel("Password:");
-        l_password.setBounds(20, 130, 100, 20);
-        l_password.setFont(new Font("Arial", Font.BOLD, 15));
+        l_password.setBounds(70, 230, 100, 20);
+        l_password.setFont(new Font("Arial", Font.ITALIC, 15));
         l_password.setForeground(Color.white);
-        this.add(l_password);
+        this.add(l_password, 2, 0);
+
+        l_logo_company = new JLabel();
+        ImageIcon background = new ImageIcon("src//Resources//logo_company.jpg");
+        if (background != null) {
+            l_logo_company.setIcon(background);
+        }
+        l_logo_company.setBounds(0, 0, 600, 400);
+        this.add(l_logo_company, 2, 0);
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-        ImageIcon background = new ImageIcon("src//Resources//login_screen_image.jpg");
-        if (background != null) {
-            w = this.getWidth();
-            h = this.getHeight();
-            g.drawImage(background.getImage(), 0, 0, w, h, this);
-        }
+    private void set_insert_username_and_password() {
+        text_user = new JTextField();
+        text_user.setBounds(170, 190, 170, 20);
+        text_user.setBorder(null);
+        text_user.setBackground(new Color(81, 97, 185));
+        text_user.setForeground(new Color(224, 213, 240));
+        this.add(text_user, 2, 0);
 
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
-        g2d.fillRect(50, 110, 500, 300);
+        text_password = new JPasswordField();
+        text_password.setBounds(170, 230, 170, 20);
+        text_password.setBorder(null);
+        text_password.setBackground(new Color(81, 97, 185));
+        text_password.setForeground(new Color(224, 213, 240));
+        this.add(text_password, 2, 0);
     }
 
 }
