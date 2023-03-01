@@ -15,9 +15,16 @@ public class ApplicationWindow extends JFrame {
         this.setBounds(0, 0, 1540, 830);
 
 
-        login_screen = new LoginScreen(this.getWidth(), this.getHeight());
+        login_screen = new LoginScreen(this.getWidth(), this.getHeight(), this);
         this.add(login_screen);
 
         this.setVisible(true);
+
+    }
+
+    public void login_successful() {
+        login_screen.setVisible(false);
+        Homepage homepage = new Homepage(this.getWidth(), this.getHeight());
+        this.add(homepage);
     }
 }

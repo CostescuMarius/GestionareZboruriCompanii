@@ -23,7 +23,10 @@ public class LoginScreen extends JLayeredPane {
 
     private JButton b_login_interface, b_register_interface, b_sign_in, b_sign_up;
 
-    public LoginScreen(int width, int height) {
+    private ApplicationWindow app_wind;
+
+    public LoginScreen(int width, int height, ApplicationWindow app_wind) {
+        this.app_wind = app_wind;
         this.width = width;
         this.height = height;
 
@@ -334,7 +337,7 @@ public class LoginScreen extends JLayeredPane {
                                 email_exists = true;
 
                                 if (new String(login_text_password.getPassword()).hashCode() == (rs.getInt("Password"))) {
-                                    l_login_info.setText("Bine baaaaa");
+                                    app_wind.login_successful();
                                 } else {
                                     l_login_info.setText("Wrong Password!");
                                 }

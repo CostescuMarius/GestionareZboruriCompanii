@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class BackgroundLogin extends JLabel {
-    int width, height;
+    private int width, height;
 
     public BackgroundLogin(int width, int height) {
         this.width = width;
