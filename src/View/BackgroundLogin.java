@@ -19,7 +19,6 @@ public class BackgroundLogin extends JLabel {
         super.paintComponent(g);
         Graphics2D g2d1 = (Graphics2D) g;
         Graphics2D g2d2 = (Graphics2D) g;
-        Graphics2D g2d3 = (Graphics2D) g;
         ImageIcon background = new ImageIcon("src//Resources//login_screen_image.jpg");
         if (background != null) {
             g.drawImage(background.getImage(), 0, 0, this.width, this.height, this);

@@ -1,6 +1,8 @@
 package View;
 
 
+import Model.DataBaseConnection;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +12,8 @@ import javax.swing.*;
 
 public class LoginScreen extends JLayeredPane {
     private int width, height;
-    private String url = "jdbc:mysql://localhost:3306/conturi", username = "root", password = "16092001";
+    //private String url = "jdbc:mysql://localhost:3306/conturi", username = "root", password = "16092001";
+
 
     private JLabel l_login_email, l_login_password,
             l_logo_company, l_company_name, l_motto, l_info,
@@ -320,7 +323,7 @@ public class LoginScreen extends JLayeredPane {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Connection connection = database_connection();
+                    Connection connection = DataBaseConnection.database_connection();
                     System.out.println("Database connected!");
 
                     if(login_text_email.getText().equals("") ||
@@ -333,11 +336,23 @@ public class LoginScreen extends JLayeredPane {
                         ResultSet rs = statement.executeQuery(query);
                         boolean email_exists = false;
                         while (rs.next()) {
-                            if (login_text_email.getText().equals(rs.getString("E-mail"))) {
+                            if (login_text_email.getText().equals(rs.getString("email"))) {
                                 email_exists = true;
 
-                                if (new String(login_text_password.getPassword()).hashCode() == (rs.getInt("Password"))) {
-                                    app_wind.login_successful();
+                                if (new String(login_text_password.getPassword()).hashCode() == (rs.getInt("password"))) {
+                                    DataBaseConnection.email_connected = rs.getString("email");
+                                    login_text_email.setText(null);
+                                    login_text_password.setText(null);
+                                    l_login_info.setText("");
+                                    if(rs.getInt("type") == 0) {
+                                        app_wind.login_user_successful();
+                                    }
+                                    else if(rs.getInt("type") == 1) {
+                                        app_wind.login_employee_successful();
+                                    }
+                                    else if(rs.getInt("type") == 2) {
+                                        app_wind.login_admin_successful();
+                                    }
                                 } else {
                                     l_login_info.setText("Wrong Password!");
                                 }
@@ -347,6 +362,8 @@ public class LoginScreen extends JLayeredPane {
                             l_login_info.setText("Wrong E-mail or Password!");
                         }
                         statement.close();
+                        connection.close();
+                        System.out.println("Connection closed!");
                     }
 
                 } catch (SQLException ex) {
@@ -359,7 +376,7 @@ public class LoginScreen extends JLayeredPane {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Connection connection = database_connection();
+                    Connection connection = DataBaseConnection.database_connection();
                     System.out.println("Database connected!");
 
                     if(register_text_email.getText().equals("") ||
@@ -376,13 +393,13 @@ public class LoginScreen extends JLayeredPane {
                         ResultSet rs = statement.executeQuery(query);
                         boolean email_exists = false;
                         while (rs.next()) {
-                            if (register_text_email.getText().equals(rs.getString("E-mail"))) {
+                            if (register_text_email.getText().equals(rs.getString("email"))) {
                                 l_register_info.setText("E-mail is already used!");
                                 email_exists = true;
                             }
                         }
                         if(email_exists == false) {
-                            statement.executeUpdate("INSERT INTO user VALUES ('"+register_text_email.getText()+"','"+register_text_firstname.getText()+"','"+register_text_lastname.getText()+"','"+register_text_address.getText()+"','"+register_text_mobile_no.getText()+"','"+new String(register_text_password.getPassword()).hashCode()+"')");
+                            statement.executeUpdate("INSERT INTO user VALUES ('"+register_text_email.getText()+"','"+register_text_firstname.getText()+"','"+register_text_lastname.getText()+"','"+register_text_address.getText()+"','"+register_text_mobile_no.getText()+"','"+new String(register_text_password.getPassword()).hashCode()+"', 0)");
                             l_register_info.setText("Correct");
 
                             register_text_email.setText(null);
@@ -395,6 +412,8 @@ public class LoginScreen extends JLayeredPane {
                             b_login_interface.doClick();
                         }
                         statement.close();
+                        connection.close();
+                        System.out.println("Connection closed!");
                     }
 
                 } catch (SQLException ex) {
@@ -404,7 +423,7 @@ public class LoginScreen extends JLayeredPane {
         });
     }
 
-    private Connection database_connection() throws SQLException {
+    /*private Connection database_connection() throws SQLException {
         System.out.println("Connecting database...");
         Connection connection = DriverManager.getConnection(url, username, password);
         return connection;
@@ -418,5 +437,5 @@ public class LoginScreen extends JLayeredPane {
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot connect the database!", e);
         }*/
-    }
+    //}
 }
