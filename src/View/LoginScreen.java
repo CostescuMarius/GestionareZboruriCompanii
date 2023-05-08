@@ -322,6 +322,7 @@ public class LoginScreen extends JLayeredPane {
         b_sign_in.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                boolean account_found = false;
                 try {
                     Connection connection = DataBaseConnection.database_connection();
                     System.out.println("Database connected!");
@@ -340,24 +341,48 @@ public class LoginScreen extends JLayeredPane {
                                 email_exists = true;
 
                                 if (new String(login_text_password.getPassword()).hashCode() == (rs.getInt("password"))) {
+                                    account_found = true;
                                     DataBaseConnection.email_connected = rs.getString("email");
                                     login_text_email.setText(null);
                                     login_text_password.setText(null);
                                     l_login_info.setText("");
                                     if(rs.getInt("type") == 0) {
                                         app_wind.login_user_successful();
+                                        break;
                                     }
                                     else if(rs.getInt("type") == 1) {
-                                        app_wind.login_employee_successful();
-                                    }
-                                    else if(rs.getInt("type") == 2) {
                                         app_wind.login_admin_successful();
+                                        break;
                                     }
                                 } else {
                                     l_login_info.setText("Wrong Password!");
                                 }
                             }
                         }
+
+                        if(!account_found) {
+                            String query2 = "SELECT * FROM employee ";
+                            ResultSet rs2 = statement.executeQuery(query2);
+                            while (rs2.next()) {
+                                if (login_text_email.getText().equals(rs2.getString("email"))) {
+                                    email_exists = true;
+
+                                    if (new String(login_text_password.getPassword()).hashCode() == (rs2.getInt("password"))) {
+                                        DataBaseConnection.email_connected = rs2.getString("email");
+                                        login_text_email.setText(null);
+                                        login_text_password.setText(null);
+                                        l_login_info.setText("");
+
+                                        app_wind.login_employee_successful();
+                                        break;
+
+                                    } else {
+                                        l_login_info.setText("Wrong Password!");
+                                    }
+                                }
+                            }
+                        }
+
                         if(email_exists == false) {
                             l_login_info.setText("Wrong E-mail or Password!");
                         }
@@ -396,6 +421,7 @@ public class LoginScreen extends JLayeredPane {
                             if (register_text_email.getText().equals(rs.getString("email"))) {
                                 l_register_info.setText("E-mail is already used!");
                                 email_exists = true;
+                                break;
                             }
                         }
                         if(email_exists == false) {

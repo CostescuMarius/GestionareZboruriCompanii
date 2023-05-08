@@ -12,6 +12,7 @@ public class ApplicationWindow extends JFrame {
     private ProfileUser profileUser;
     private SupportUser supportUser;
     private AdminInterface adminInterface;
+    private EmployeeInterface employeeInterface;
 
     public ApplicationWindow() {
         this.setTitle("FLIGHT MANAGEMENT");
@@ -29,49 +30,56 @@ public class ApplicationWindow extends JFrame {
         this.add(container_interfaces);
 
         login_screen = new LoginScreen(this.getWidth(), this.getHeight(), this);
+        container_interfaces.add(login_screen, "panel_login");
+
         homepageUser = new HomepageUser(this.getWidth(), this.getHeight(), this);
+        container_interfaces.add(homepageUser, "panel_hpuser");
+
         profileUser = new ProfileUser(this.getWidth(), this.getHeight(), this);
+        container_interfaces.add(profileUser, "panel_profuser");
+
         supportUser = new SupportUser(this.getWidth(), this.getHeight(), this);
+        container_interfaces.add(supportUser, "panel_supuser");
+
         adminInterface = new AdminInterface(this.getWidth(), this.getHeight(), this);
+        container_interfaces.add(adminInterface, "panel_adminui");
+
+        employeeInterface = new EmployeeInterface(this.getWidth(), this.getHeight(), this);
+        container_interfaces.add(employeeInterface, "panel_employeeui");
 
         //set_login_interface();
 
         //login_user_successful();
 
-        login_admin_successful();
+        //login_admin_successful();
+        login_employee_successful();
 
         this.setVisible(true);
     }
 
     public void set_login_interface() {
-        container_interfaces.add(login_screen, "panel_login");
         cardLayout.show(container_interfaces, "panel_login");
     }
 
     public void login_user_successful() {
-        container_interfaces.add(homepageUser, "panel_hpuser");
         cardLayout.show(container_interfaces, "panel_hpuser");
     }
 
 
     public void login_admin_successful() {
-        container_interfaces.add(adminInterface, "panel_adminui");
         cardLayout.show(container_interfaces, "panel_adminui");
     }
 
     public void login_employee_successful() {
-
+        cardLayout.show(container_interfaces, "panel_employeeui");
     }
 
     public void set_profile_interface() {
         profileUser.set_infos();
-        container_interfaces.add(profileUser, "panel_profuser");
         cardLayout.show(container_interfaces, "panel_profuser");
     }
 
     public void set_support_user_interface() {
-        //supportUser.set_infos();
-        container_interfaces.add(supportUser, "panel_supuser");
         cardLayout.show(container_interfaces, "panel_supuser");
     }
 }
