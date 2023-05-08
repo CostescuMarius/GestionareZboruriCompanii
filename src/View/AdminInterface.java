@@ -7,20 +7,23 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.sql.*;
 import java.util.Vector;
 
 public class AdminInterface extends JPanel {
     int width, height;
 
-    private JButton btnCreate, bLogout, binteriorConfirm, btnDelete;
-    private JLabel lconfirmlogout, l_create_label, l_delete_label;
+    private JButton btnCreate, bLogout, binteriorConfirm, btnDelete, btnUpdate;
+    private JLabel lconfirmlogout, l_create_label, l_delete_label, l_update_label;
     private ApplicationWindow fa;
-    private JTextField txtEmailCreate, txtFirstNameCreate, txtLastNameCreate, txtMobileNoCreate, txtSalaryCreate;
-    private JPasswordField txtPasswordCreate;
+    private JTextField txtEmailCreate, txtFirstNameCreate, txtLastNameCreate, txtMobileNoCreate, txtSalaryCreate
+            ,txtFirstNameEdit, txtLastNameEdit, txtMobileNoEdit, txtSalaryEdit;
+    private JPasswordField txtPasswordCreate, txtPasswordEdit;
 
     private boolean confirm_logout_open = false;
-    private JComboBox<String> cbEmailDelete;
+    private JComboBox<String> cbEmailDelete, cbEmailEdit;
 
     private Vector<String> emails;
 
@@ -139,7 +142,7 @@ public class AdminInterface extends JPanel {
         panelDelete.add(lblEmailDelete);
 
         get_emplyoyee_emails();
-        cbEmailDelete = new JComboBox<>(emails);
+        cbEmailDelete = new JComboBox<>(new DefaultComboBoxModel(emails));
         cbEmailDelete.setBounds(170, 230, 220, 20);
         panelDelete.add(cbEmailDelete);
 
@@ -173,16 +176,16 @@ public class AdminInterface extends JPanel {
         lblEmailEdit.setBounds(80, 230, 46, 14);
         panelEdit.add(lblEmailEdit);
 
-        JComboBox<String> cbEmailEdit = new JComboBox<String>();
+        cbEmailEdit = new JComboBox<>(new DefaultComboBoxModel(emails));
         cbEmailEdit.setBounds(170, 230, 220, 20);
         panelEdit.add(cbEmailEdit);
-
+        add_action_combobox();
 
         JLabel lblFirstNameEdit = new JLabel("First Name:");
         lblFirstNameEdit.setBounds(80, 270, 80, 14);
         panelEdit.add(lblFirstNameEdit);
 
-        JTextField txtFirstNameEdit = new JTextField();
+        txtFirstNameEdit = new JTextField();
         txtFirstNameEdit.setBounds(170, 270, 220, 20);
         panelEdit.add(txtFirstNameEdit);
 
@@ -190,7 +193,7 @@ public class AdminInterface extends JPanel {
         lblLastNameEdit.setBounds(80, 310, 80, 14);
         panelEdit.add(lblLastNameEdit);
 
-        JTextField txtLastNameEdit = new JTextField();
+        txtLastNameEdit = new JTextField();
         txtLastNameEdit.setBounds(170, 310, 220, 20);
         panelEdit.add(txtLastNameEdit);
 
@@ -198,7 +201,7 @@ public class AdminInterface extends JPanel {
         lblPasswordEdit.setBounds(80, 350, 80, 14);
         panelEdit.add(lblPasswordEdit);
 
-        JTextField txtPasswordEdit = new JTextField();
+        txtPasswordEdit = new JPasswordField();
         txtPasswordEdit.setBounds(170, 350, 220, 20);
         panelEdit.add(txtPasswordEdit);
 
@@ -206,7 +209,7 @@ public class AdminInterface extends JPanel {
         lblMobileNoEdit.setBounds(80, 390, 80, 14);
         panelEdit.add(lblMobileNoEdit);
 
-        JTextField txtMobileNoEdit = new JTextField();
+        txtMobileNoEdit = new JTextField();
         txtMobileNoEdit.setBounds(170, 390, 220, 20);
         panelEdit.add(txtMobileNoEdit);
 
@@ -214,18 +217,72 @@ public class AdminInterface extends JPanel {
         lblSalaryEdit.setBounds(80, 430, 80, 14);
         panelEdit.add(lblSalaryEdit);
 
-        JTextField txtSalaryEdit = new JTextField();
+        txtSalaryEdit = new JTextField();
         txtSalaryEdit.setBounds(170, 430, 220, 20);
         panelEdit.add(txtSalaryEdit);
 
-        JButton btnUpdate = new JButton("Update");
+        btnUpdate = new JButton("Update");
         btnUpdate.setBackground(Color.orange);
         btnUpdate.setBorder(null);
         btnUpdate.setBounds(200, 520, 89, 23);
         panelEdit.add(btnUpdate);
 
+        l_update_label = new JLabel("");
+        l_update_label.setBounds(30, 470, this.width, 30);
+        panelEdit.add(l_update_label);
 
+        set_to_unknown();
         this.add(panelEdit);
+    }
+
+    private void add_action_combobox() {
+        cbEmailEdit.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    Object item = event.getItem();
+
+                    if(item.toString().equals("-")) {
+                        set_to_unknown();
+                    }
+                    else {
+                        try {
+                            Connection connection = DataBaseConnection.database_connection();
+                            System.out.println("Database connected!");
+
+                            Statement statement = connection.createStatement();
+                            String query = "SELECT * FROM employee ";
+                            ResultSet rs = statement.executeQuery(query);
+
+                            while (rs.next()) {
+                                if (item.toString().equals(rs.getString("email"))) {
+                                    txtFirstNameEdit.setText(rs.getString("firstName"));
+                                    txtLastNameEdit.setText(rs.getString("lastName"));
+                                    txtPasswordEdit.setText("password");
+                                    txtMobileNoEdit.setText(rs.getString("mobileNo"));
+                                    txtSalaryEdit.setText(rs.getString("salary"));
+                                    break;
+                                }
+                            }
+                            statement.close();
+                            connection.close();
+                            System.out.println("Connection closed!");
+
+                        } catch (SQLException ex) {
+                            throw new IllegalStateException("Cannot connect the database!", ex);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void set_to_unknown() {
+        String unknown = "-";
+        txtFirstNameEdit.setText(unknown);
+        txtLastNameEdit.setText(unknown);
+        txtPasswordEdit.setText(unknown);
+        txtMobileNoEdit.setText(unknown);
+        txtSalaryEdit.setText(unknown);
     }
 
     private void set_logout_interface() {
@@ -296,6 +353,30 @@ public class AdminInterface extends JPanel {
         add_btnedit_action();
     }
 
+    private void get_emplyoyee_emails() {
+        try {
+            Connection connection = DataBaseConnection.database_connection();
+            System.out.println("Database connected!");
+
+
+            Statement statement = connection.createStatement();
+            String query = "SELECT * FROM employee ";
+            ResultSet rs = statement.executeQuery(query);
+
+            emails = new Vector<String>();
+            while (rs.next()) {
+                emails.add(rs.getString("email"));
+            }
+
+            statement.close();
+            connection.close();
+            System.out.println("Connection closed!");
+
+        } catch (SQLException ex) {
+            throw new IllegalStateException("Cannot connect the database!", ex);
+        }
+    }
+
     private void add_btncreate_action() {
         btnCreate.addActionListener(new ActionListener() {
             @Override
@@ -321,6 +402,7 @@ public class AdminInterface extends JPanel {
                             if (txtEmailCreate.getText().equals(rs.getString("email"))) {
                                 l_create_label.setText("E-mail is already used!");
                                 email_exists = true;
+                                break;
                             }
                         }
                         if(email_exists == false) {
@@ -329,6 +411,8 @@ public class AdminInterface extends JPanel {
                             get_emplyoyee_emails();
 
                             cbEmailDelete.setModel(new DefaultComboBoxModel(emails));
+                            cbEmailEdit.setModel(new DefaultComboBoxModel(emails));
+                            set_to_unknown();
 
                             l_create_label.setText("Correct");
 
@@ -349,30 +433,6 @@ public class AdminInterface extends JPanel {
                 }
             }
         });
-    }
-
-    private void get_emplyoyee_emails() {
-        try {
-            Connection connection = DataBaseConnection.database_connection();
-            System.out.println("Database connected!");
-
-
-            Statement statement = connection.createStatement();
-            String query = "SELECT * FROM employee ";
-            ResultSet rs = statement.executeQuery(query);
-
-            emails = new Vector<String>();
-            while (rs.next()) {
-                emails.add(rs.getString("email"));
-            }
-
-            statement.close();
-            connection.close();
-            System.out.println("Connection closed!");
-
-        } catch (SQLException ex) {
-            throw new IllegalStateException("Cannot connect the database!", ex);
-        }
     }
 
     private void add_btndelete_action() {
@@ -397,6 +457,8 @@ public class AdminInterface extends JPanel {
                             get_emplyoyee_emails();
 
                             cbEmailDelete.setModel(new DefaultComboBoxModel(emails));
+                            cbEmailEdit.setModel(new DefaultComboBoxModel(emails));
+                            set_to_unknown();
 
                             l_delete_label.setText("Correct");
 
@@ -413,7 +475,45 @@ public class AdminInterface extends JPanel {
     }
 
     private void add_btnedit_action() {
+        btnUpdate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Connection connection = DataBaseConnection.database_connection();
+                    System.out.println("Database connected!");
 
+                    if(cbEmailEdit.getSelectedItem().toString().equals("-")) {
+                        l_update_label.setText("Please select employee to be edited.");
+                    }
+                    else {
+                        String query = "UPDATE employee SET firstName=?, lastName=?, password=?, mobileNo=?, salary=? WHERE email=?";
+
+                        PreparedStatement statement = connection.prepareStatement(query);
+                        statement.setString(1, txtFirstNameEdit.getText());
+                        statement.setString(2, txtLastNameEdit.getText());
+                        statement.setInt(3, new String(txtPasswordEdit.getPassword()).hashCode());
+                        statement.setString(4, txtMobileNoEdit.getText());
+                        statement.setDouble(5, Double.parseDouble(txtSalaryEdit.getText()));
+
+                        String email = cbEmailEdit.getSelectedItem().toString();
+                        statement.setString(6, email);
+
+                        statement.executeUpdate();
+
+                        l_update_label.setText("Correct");
+
+                        statement.close();
+                        connection.close();
+                        System.out.println("Connection closed!");
+                    }
+
+                } catch (SQLException ex) {
+                    throw new IllegalStateException("Cannot connect the database!", ex);
+                }
+            }
+        });
     }
+
+
 
 }
