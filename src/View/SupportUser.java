@@ -164,7 +164,7 @@ public class SupportUser extends JPanel {
                     }
                     idProblem++;
 
-                    statement.executeUpdate("INSERT INTO problem VALUES ('"+idProblem+"','"+txtcontent.getText()+"','in progress','"+DataBaseConnection.email_connected+"','-','"+txtsubjext.getText()+"')");
+                    statement.executeUpdate("INSERT INTO problem VALUES ('"+idProblem+"','"+txtcontent.getText()+"','in progress','"+DataBaseConnection.email_connected+"','-','"+txtsubjext.getText()+"', '-')");
 
                     statement.close();
                     connection.close();
@@ -238,8 +238,9 @@ public class SupportUser extends JPanel {
                         String subject = rs.getString("subject");
                         String status = rs.getString("status");
                         String content = rs.getString("content");
+                        String solve = rs.getString("solve");
 
-                        String problemx = "Problem number: " + idProblem + "    Subject: "+ subject + "\n    Content: " +content + "    Status: " + status;
+                        String problemx = "Problem number: " + idProblem + "    Subject: "+ subject + "\n    Content: " +content + "    Status: " + status + "    Solve: " + solve ;
 
                         model.addElement(problemx);
 

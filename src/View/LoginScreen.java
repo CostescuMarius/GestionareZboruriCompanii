@@ -23,7 +23,6 @@ public class LoginScreen extends JLayeredPane {
             register_text_lastname, register_text_address, register_text_mobile_no;
     private JPasswordField login_text_password, register_text_password;
     private BackgroundLogin background_login;
-
     private JButton b_login_interface, b_register_interface, b_sign_in, b_sign_up;
 
     private ApplicationWindow app_wind;
