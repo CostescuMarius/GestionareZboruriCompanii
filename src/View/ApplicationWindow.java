@@ -2,6 +2,7 @@ package View;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Vector;
 
 
 public class ApplicationWindow extends JFrame {
@@ -49,10 +50,10 @@ public class ApplicationWindow extends JFrame {
 
         //set_login_interface();
 
-        //login_user_successful();
+        login_user_successful();
 
         //login_admin_successful();
-        login_employee_successful();
+        //login_employee_successful();
 
         this.setVisible(true);
     }

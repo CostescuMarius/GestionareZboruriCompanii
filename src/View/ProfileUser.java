@@ -20,6 +20,8 @@ public class ProfileUser extends JPanel {
     private ApplicationWindow fa;
     private JButton bBackSearch;
     private JLabel lemail, llastname, lfirstname, laddress, lmobile;
+    private JList<String> tickets;
+    private JScrollPane ticketScrollPane;
 
     public ProfileUser(int width, int height, ApplicationWindow fa) {
         this.height = height;
@@ -55,7 +57,7 @@ public class ProfileUser extends JPanel {
 
         this.add(bBackSearch);
 
-        int pos_x = 200, pos_y = 270;
+        int pos_x = 20, pos_y = 270;
         lemail = new JLabel();
         lemail.setFont(new Font("Arial", Font.BOLD, 19));
         //lemail.setForeground(Color.white);
@@ -81,6 +83,12 @@ public class ProfileUser extends JPanel {
         //lmobile.setForeground(Color.white);
         lmobile .setBounds(pos_x, pos_y += 50, 400, 30);
 
+        tickets = new JList<String>();
+        tickets.setBackground(Color.lightGray);
+        ticketScrollPane = new JScrollPane(tickets);
+        ticketScrollPane.setBounds(500, 200,520, 420);
+        this.add(ticketScrollPane);
+
         this.add(lemail);
         this.add(llastname);
         this.add(lfirstname);
@@ -98,7 +106,6 @@ public class ProfileUser extends JPanel {
     }
 
     public void set_infos() {
-        if(!profileChecked) {
             try {
                 Connection connection = DataBaseConnection.database_connection();
                 System.out.println("Database connected!");
@@ -118,6 +125,18 @@ public class ProfileUser extends JPanel {
                     }
                 }
 
+
+                String query2 = "SELECT * FROM ticket ";
+                ResultSet rs2 = statement.executeQuery(query2);
+                DefaultListModel<String> listModel = new DefaultListModel<>();
+                while (rs2.next()) {
+                    if (DataBaseConnection.email_connected.equals(rs2.getString("emaiUser"))) {
+                        listModel.addElement("Ticket: " + rs2.getInt("idTicket") + "   Flight: " + rs2.getInt("idFlight") + "   Type: "
+                                + rs2.getString("type") + "   Price: " + rs2.getInt("price") + "    Payment: " + rs2.getString("payment"));
+                    }
+                }
+                tickets.setModel(listModel);
+
                 statement.close();
                 connection.close();
                 System.out.println("Connection closed!");
@@ -125,6 +144,5 @@ public class ProfileUser extends JPanel {
                 throw new IllegalStateException("Cannot connect the database!", ex);
             }
         }
-    }
 
 }
